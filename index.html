@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사물함 예약</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>사물함 예약</h1>
+
+<div class="info-box">
+  <h2>📌 이용 안내 및 주의사항</h2>
+  <p>빈 칸(초록색)을 클릭해 예약하고, 예약된 칸(빨간색)을 클릭하면 취소할 수 있습니다.</p>
+  <p>일주일 <span class="highlight">12시간 이상 야간자율학습</span> 필수! (미달 시 사물함 이용 퇴출)</p>
+  <p>퇴출 시 <span class="highlight">3일 이내에 사물함을 비우지 않으면 내부 물품은 즉시 폐기</span> 처리됩니다.</p>
+</div>
+
+<div id="grid"></div>
+
+<div id="modal-overlay">
+  <div id="modal">
+    <h3 id="modal-title">타이틀</h3>
+    <p id="modal-desc">설명</p>
+    <input type="text" id="modal-input" placeholder="이름을 입력하세요" />
+    <div class="modal-buttons">
+      <button id="modal-cancel">취소</button>
+      <button id="modal-confirm">확인</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+
+</body>
+</html>
