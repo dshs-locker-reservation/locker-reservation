@@ -1,0 +1,34 @@
+body {
+  font-family: sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 20px 10px; /* 모바일에서 좌우 여백 확보 */
+}
+
+#grid {
+  display: grid;
+  /* 화면 크기에 맞춰 자동으로 열 개수 조절 (반응형) */
+  grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+  gap: 10px;
+  max-width: 500px; /* PC에서도 너무 넓어지지 않게 제한 */
+  margin: 20px auto;
+}
+
+.locker {
+  padding: 15px 5px; /* 모바일 터치를 위해 영역 확보 */
+  border-radius: 8px;
+  cursor: pointer;
+  background: #9be59b;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-height: 60px; /* 사물함 칸의 최소 높이 */
+  word-break: keep-all; /* 글자가 이상하게 줄바꿈되지 않도록 방지 */
+}
+
+.reserved {
+  background: #ff8a8a;
+  /* cursor: not-allowed; (삭제됨: 이제 클릭해서 취소해야 하므로) */
+}
