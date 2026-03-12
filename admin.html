@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>관리자 페이지</title>
+<style>
+  body {
+    font-family: 'Pretendard', sans-serif;
+    background-color: #f4f7f6;
+    padding: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  h1 { color: #2c3e50; font-size: 24px; text-align: center; }
+  #list { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+  .item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 10px;
+    border-bottom: 1px solid #eee;
+  }
+  .item:last-child { border-bottom: none; }
+  .locker-info { font-size: 16px; color: #333; }
+  .locker-info strong { color: #2e7d32; display: inline-block; width: 45px; } /* 번호 정렬 맞추기 */
+  .empty-text { color: #95a5a6; font-style: italic; } /* 빈 사물함 글씨 스타일 */
+  
+  button {
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+    font-size: 13px;
+  }
+  
+  /* 버튼 색상 분리 */
+  .btn-delete { background: #ff5252; }
+  .btn-delete:hover { background: #d32f2f; }
+  
+  .btn-add { background: #3498db; }
+  .btn-add:hover { background: #2980b9; }
+</style>
+</head>
+
+<body>
+
+<h1>⚙️ 전체 사물함 관리 (관리자용)</h1>
+
+<div id="list">데이터를 불러오는 중...</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+// 💡 등록 기능을 위해 'set' 함수도 추가로 불러옵니다.
+import { getDatabase, ref, get, set, remove } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAk8MjKCLDbk-OXqxyW5g8MY7DLaY4Dbjg",
+  authDomain: "locker-b8f43.firebaseapp.com",
+  projectId: "locker-b8f43",
+  storageBucket: "locker-b8f43.firebasestorage.app",
+  messagingSenderId: "204210400652",
+  appId: "1:204210400652:web:ffd978d8ceba7814e63aa9",
+  measurementId: "G-GYHSV2FWNR",
+  databaseURL: "https://locker-b8f43-default-rtdb.firebaseio.com"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const list = document.getElementById("list");
+
+async function load() {
+  const lockersRef = ref(db, "lockers");
+  const snapshot = await get(lockersRef);
+
+  list.innerHTML = ""; 
+  const lockersData = snapshot.exists() ? snapshot.val() : {};
+
+  // 1번부터 33번까지 모든 사물함을 화면에 그립니다.
+  for (let i = 1; i <= 33; i++) {
+    let div = document.createElement("div");
+    div.className = "item";
+    
+    let infoSpan = document.createElement("span");
+    infoSpan.className = "locker-info";
+
+    let btn = document.createElement("button");
+
+    if (lockersData[i]) {
+      // 🔴 이미 등록된 사물함인 경우 (삭제 버튼 표시)
+      infoSpan.innerHTML = `<strong>${i}번</strong> ${lockersData[i].name}`;
+      
+      btn.className = "btn-delete";
+      btn.innerText = "강제 취소";
+      
+      btn.onclick = async () => {
+        let pwd = prompt(`[경고] ${i}번 사물함 등록을 강제 취소합니다.\n관리자 비밀번호를 입력하세요.`);
+        if (pwd === null) return; 
+        
+        if (pwd === "dshs") {
+          let specificLockerRef = ref(db, "lockers/" + i);
+          await remove(specificLockerRef);
+          alert("관리자 권한으로 취소되었습니다.");
+          load(); 
+        } else {
+          alert("❌ 비밀번호가 틀렸습니다.");
+        }
+      };
+    } else {
+      // 🟢 빈 사물함인 경우 (수동 등록 버튼 표시)
+      infoSpan.innerHTML = `<strong>${i}번</strong> <span class="empty-text">빈 사물함</span>`;
+      
+      btn.className = "btn-add";
+      btn.innerText = "수동 등록";
+      
+      btn.onclick = async () => {
+        let name = prompt(`[관리자 등록] ${i}번 사물함에 등록할 학생의 이름을 입력하세요:`);
+        if (!name || name.trim() === "") return; // 이름 안 적고 취소 누르면 무시
+
+        let pwd = prompt(`관리자 비밀번호를 입력하세요.`);
+        if (pwd === null) return; 
+        
+        if (pwd === "dshs") {
+          let specificLockerRef = ref(db, "lockers/" + i);
+          await set(specificLockerRef, { name: name.trim() });
+          alert(`${i}번에 ${name} 학생이 등록되었습니다.`);
+          load(); 
+        } else {
+          alert("❌ 비밀번호가 틀렸습니다.");
+        }
+      };
+    }
+
+    div.appendChild(infoSpan);
+    div.appendChild(btn);
+    list.appendChild(div);
+  }
+}
+
+load();
+</script>
+
+</body>
+</html>
